@@ -15,7 +15,7 @@ HTML5 video supported browsers on desktop:
 * Safari
 * Opera
 
-> *Please note this plugin will **not work on mobile devices**. Background videos will never work until autoplay is allowed. A responsive image is suggested as fallback*
+> *Please note this plugin will not work on mobile devices. Background videos will never work until autoplay is allowed. A responsive image is suggested as fallback*
 
 ## How to use
 The HTML structure is the most important part here. The rest of the work will be taken care of by the JavaScript.
@@ -43,17 +43,30 @@ Then, before your closing `<body>` tag add:
 ```
 In its most simple form, this will create a video based on the `window` height and width and apply a Parallax effect of 0.5.
 
-#### Other usage
+#### Usage with additional options
 
 ```
 <div id="outer-wrap" style="width: 100%; height: 450px;>"
-    <div id="video-wrap">
+    <div id="vid-wrap">
         <video id="my-video" preload="metadata" autoplay loop>
             <source src="yourVideoName.mp4" type="video/mp4">
             <source src="yourVideoName.webm" type="video/webm">
         </video>
     </div>
 </div>
+...
+```
+```
+...
+$(element).backgroundVideo({
+    $videoWrap: $('#vid-wrap'),
+    $outerWrap: $('#outer-wrap'),
+    preventContextMenu: true,
+    parallaxOptions: {
+        offset: 60,
+        effect: 0.7
+    }
+});
 ```
 
 ## Options
