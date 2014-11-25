@@ -2,7 +2,7 @@ backgroundVideo - v0.1.0 (beta)
 ============
 ## About
 ### What is backgroundVideo?
-backgroundVideo makes your HTML5 `<video>` behave like the CSS property `background-size: cover`, making it fully responsive and scaling to aspect ratio. Also includeed is an optional Parallax effect on the video. If you would like the Parallax effect to behave like `background-attachment: fixed` instead of Parallax, you can set `parallaxOptions.effect: 1`.
+backgroundVideo makes your HTML5 `<video>` behave like the CSS property `background-size: cover`, making it fully responsive and scaling to aspect ratio. Also included is an optional hardware accelerated parallax effect on the video. If you would like the parallax effect to behave like `background-attachment: fixed` instead of parallax, you can set `parallaxOptions.effect: 1`.
 
 ### Why is this plugin required?
 You may be aware of the CSS property `object-fill: cover`. Unfortunately, this is currently only supported in Chrome ([http://caniuse.com/#feat=object-fit](http://caniuse.com/#feat=object-fit)). This plugin will allow you to use a video as a responsive background.
