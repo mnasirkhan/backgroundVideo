@@ -7,6 +7,12 @@ backgroundVideo makes your HTML5 `<video>` behave like the CSS property `backgro
 ### Why is this plugin required?
 You may be aware of the CSS property `object-fill: cover`. Unfortunately, this is currently only supported in Chrome ([http://caniuse.com/#feat=object-fit](http://caniuse.com/#feat=object-fit)). This plugin will allow you to use a video as a responsive background.
 
+### Working Examples
+* ([Simple Example](http://linnett.github.io/backgroundVideo/simple-example.html))
+* ([Text Overlay](http://linnett.github.io/backgroundVideo/text-overlay-example.html))
+* ([With Header](http://linnett.github.io/backgroundVideo/with-header-example.html))
+*Please note: parallax video is most effective on fixed position videos*
+
 ### Browser Support
 HTML5 video supported browsers on desktop:
 * IE9+
