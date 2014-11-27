@@ -1,5 +1,5 @@
  /*!
- * backgroundVideo v0.1.0
+ * backgroundVideo v0.1.1
  * https://github.com/linnett/backgroundVideo
  * Use HTML5 video to create an effect like the CSS property, 'background-size: cover'. Includes parallax option.
  *
@@ -22,11 +22,9 @@
             preventContextMenu: false,
             parallax: true,
             parallaxOptions: {
-                offset: 0,
-                // Enter number between 0 and 1
-                effect: 0.5
+                effect: 1.5
             },
-            pauseVideoOnViewLoss: true
+            pauseVideoOnViewLoss: false
         };
 
     // The actual plugin constructor
@@ -42,13 +40,21 @@
         this.detectBrowser();
         this.options.has3d = this.detect3d();
 
-        // Apply overflow hidden fix to the video wrap
-        this.options.$videoWrap.css('overflow', 'hidden');
+        // Set wrap default styles
+        this.options.$videoWrap.css({
+            'position': 'relative',
+            'overflow': 'hidden',
+            'z-index': '10'
+        });
+        // Set object default styles
+        this.options.$video.css({
+            'position': 'absolute',
+            'z-index': '1'
+        });
 
         this.options.$video.on('canplay canplaythrough', readyCallback);
-        // If the video is in the cache of the browser,
-        // the 'canplaythrough' event might have been triggered
-        // before we registered the event handler.
+        // If video is cached, the video will already be ready
+        // so canplay/canplaythrough may not fire.
         if (this.options.$video[0].readyState > 3) {
             readyCallback();
         }
@@ -65,14 +71,17 @@
         init: function() {
             var me = this;
 
-            // Run videoCover function on window resize
+            // Run scaleObject function on window resize
             this.options.$window.resize(function() {
-                me.videoCover(me.options.$video, me.options.$videoWrap);
+                me.positionObject(me.options.$video);
             });
 
-            // Use Parallax effect on the video
+            // Use Parallax effect on the object
             if(this.options.parallax) {
-                me.parallaxScroll(this.options.$video);
+                // Set scroll listener for parallax effect
+                this.options.$window.on('scroll.backgroundVideoParallax', function () {
+                    me.positionObject(me.options.$video);
+                });
             }
 
             // Pause video when the video goes out of the browser view
@@ -80,12 +89,12 @@
                 this.playPauseVideo();
             }
 
-            // Prevent context menu on right click for video
+            // Prevent context menu on right click for object
             if(this.options.preventContextMenu) {
-                this.options.$video.on('contextmenu',function() { return false; });
+                this.options.$video.on('contextmenu', function() { return false; });
             }
 
-            // Prompt resize to trigger videoCover function to run
+            // Prompt resize to trigger listeners and set to browser size
             this.options.$window.trigger('resize');
         },
 
@@ -99,7 +108,6 @@
                 'transform':'transform'
             };
 
-            /* Add it to the body to get the computed style.*/
             document.body.insertBefore(el, document.body.lastChild);
 
             for(t in transforms){
@@ -137,11 +145,8 @@
             }
         },
 
-        videoCover: function($video, $videoWrap) {
-            var me = this,
-                heightScale,
-                widthScale,
-                scaleFactor;
+        scaleObject: function($video, $videoWrap) {
+            var me = this, heightScale, widthScale, scaleFactor;
 
             // Set the video wrap to the outerWrap size (defaulted to window)
             $videoWrap.width(this.options.$outerWrap.width());
@@ -156,41 +161,50 @@
                 scaleFactor = this.options.minimumVideoWidth / this.options.originalVideoW;
             }
 
-            // Scale
+            // Scale object
             $video.width(scaleFactor * this.options.originalVideoW);
             $video.height(scaleFactor * this.options.originalVideoH);
 
-            // Center Video to behave like background-position: 50% 50%
-            this.options.$videoWrap.scrollLeft(($video.width() - this.options.$window.width()) / 2);
-            this.options.$videoWrap.scrollTop(($video.height() - this.options.$window.height()) / 2);
+            return {
+                // Return x and y axis values for positioning
+                xPos: -(parseInt($video.width() - this.options.$window.width()) / 2),
+                yPos: parseInt($video.height() - this.options.$window.height()) / 2
+            };
 
         },
 
-        parallaxScroll: function($video) {
-            var me = this, scrolled, translate, translateStr;
+        positionObject: function($video) {
+            var me = this,
+                scrollPos = this.options.$window.scrollTop(),
+                scaleObject = this.scaleObject($video, me.options.$videoWrap),
+                xPos = scaleObject.xPos,
+                yPos = scaleObject.yPos,
+                videoPosition, videoOffset;
 
-            // Set scroll listener for parallax effect
-            this.options.$window.on('scroll.backgroundVideoParallax', function () {
-                // When scrolling, trigger parallax after offset (e.g. header)
-                if($(this).scrollTop() > me.options.parallaxOptions.offset) {
-                    scrolled = $(this).scrollTop() - me.options.parallaxOptions.offset;
-                    translate = scrolled * me.options.parallaxOptions.effect;
-                    translateStr = (me.options.has3d) ? 'translate3d(0, ' + translate + 'px, 0)' : 'translate(0, ' + translate + 'px)';
-
-                    // If the video scrolls out of view, prevent translate for performance
-                    if($(this).scrollTop() < me.options.$videoWrap.height()) {
-                        $video.css(me.options.browserPrexix + 'transform', translateStr);
-                        $video.css('transform', translateStr);
-                    }
+            // Check for parallax
+            if(this.options.parallax) {
+                // Prevent parallax when scroll position is negative to the window
+                if(scrollPos >= 0) {
+                    videoPosition = parseInt(this.options.$videoWrap.position().top);
+                    videoOffset = videoPosition - scrollPos;
+                    yPos = -(videoOffset / this.options.parallaxOptions.effect);
+                } else {
+                    yPos = 0;
                 }
-                // If the user scrolls higher than viewport, reset the translate
-                else {
-                    translateStr = (me.options.has3d) ? 'translate3d(0, 0, 0)' : 'translate(0, 0)';
+            } else {
+                yPos = -yPos;
+            }
 
-                    $video.css(me.options.browserPrexix + 'transform', translateStr);
-                    $video.css('transform', translateStr);
-                }
-            });
+            // Check for 3dtransforms
+            if(me.options.has3d) {
+                $video.css(me.options.browserPrexix + 'transform3d', 'translate3d(-'+ xPos +'px, ' + yPos + 'px, 0)');
+                $video.css('transform', 'translate3d('+ xPos +'px, ' + yPos + 'px, 0)');
+            } else {
+                $video.css(me.options.browserPrexix + 'transform', 'translate(-'+ xPos +'px, ' + yPos + 'px)');
+                $video.css('transform', 'translate('+ xPos +'px, ' + yPos + 'px)');
+            }
+
+
         },
 
         disableParallax: function () {
@@ -202,7 +216,7 @@
 
             this.options.$window.on('scroll.backgroundVideoPlayPause', function () {
                 // Play/Pause video depending on where the user is in the browser
-                if($(this).scrollTop() < me.options.$videoWrap.height()) {
+                if(me.options.$window.scrollTop() < me.options.$videoWrap.height()) {
                     me.options.$video.get(0).play();
                 } else {
                     me.options.$video.get(0).pause();

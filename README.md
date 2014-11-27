@@ -41,7 +41,7 @@ Then, before your closing `<body>` tag add:
     });
 </script>
 ```
-In its most simple form, this will create a video based on the `window` height and width and apply a Parallax effect of 0.5.
+In its most simple form, this will create a video based on the `window` height and width and apply a Parallax effect of 1.5.
 
 #### Usage with additional options
 
@@ -59,12 +59,12 @@ In its most simple form, this will create a video based on the `window` height a
 ```
 ...
 $(element).backgroundVideo({
-    $videoWrap: $('#vid-wrap'),
+    $videoWrap: $('#video-wrap'),
     $outerWrap: $('#outer-wrap'),
     preventContextMenu: true,
     parallaxOptions: {
         offset: 60,
-        effect: 0.7
+        effect: 1.7
     }
 });
 ```
@@ -78,8 +78,7 @@ $outerWrap | jQuery object | $(window) | The containing div where outer measurem
 minimumVideoWidth | number | 400 | Minimum width of the video for scaling purposes
 preventContextMenu | boolean | false | Prevents the user from viewing the context menu on the video (prevent right-click/secondary-click)
 parallax | boolean | true | Toggle's parallax video feature
-parallaxOptions.offset | number | 0 | Offset the parallax effect (e.g. when using sticky header)
-parallaxOptions.effect | number | 0.5 | The intensity of the parallax effect (1: fix)
+parallaxOptions: { effect: 1.5 } | number | 1.5 | The intensity of the parallax effect (1: fixed). Number must be >= 1.
 pauseVideoOnViewLoss | boolean | true | Pause the video when the user scrolls out of view
 
 
