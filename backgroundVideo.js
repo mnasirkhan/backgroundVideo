@@ -1,5 +1,5 @@
  /*!
- * backgroundVideo v0.1.1
+ * backgroundVideo v0.1.2
  * https://github.com/linnett/backgroundVideo
  * Use HTML5 video to create an effect like the CSS property, 'background-size: cover'. Includes parallax option.
  *
@@ -185,7 +185,7 @@
             if(this.options.parallax) {
                 // Prevent parallax when scroll position is negative to the window
                 if(scrollPos >= 0) {
-                    videoPosition = parseInt(this.options.$videoWrap.position().top);
+                    videoPosition = parseInt(this.options.$videoWrap.offset().top);
                     videoOffset = videoPosition - scrollPos;
                     yPos = -(videoOffset / this.options.parallaxOptions.effect);
                 } else {
