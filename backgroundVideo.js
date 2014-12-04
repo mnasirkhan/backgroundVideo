@@ -1,5 +1,5 @@
  /*!
- * backgroundVideo v0.1.2
+ * backgroundVideo v0.1.3
  * https://github.com/linnett/backgroundVideo
  * Use HTML5 video to create an effect like the CSS property, 'background-size: cover'. Includes parallax option.
  *
@@ -62,6 +62,9 @@
         function readyCallback() {
             me.options.originalVideoW = me.options.$video[0].videoWidth;
             me.options.originalVideoH = me.options.$video[0].videoHeight;
+            if(me.initialised) {
+                return;
+            }
             me.init();
         }
     }
@@ -70,6 +73,8 @@
 
         init: function() {
             var me = this;
+
+            this.initialised = true;
 
             // Run scaleObject function on window resize
             this.options.$window.resize(function() {
@@ -178,18 +183,15 @@
                 scrollPos = this.options.$window.scrollTop(),
                 scaleObject = this.scaleObject($video, me.options.$videoWrap),
                 xPos = scaleObject.xPos,
-                yPos = scaleObject.yPos,
-                videoPosition, videoOffset;
+                yPos = scaleObject.yPos;
 
             // Check for parallax
             if(this.options.parallax) {
                 // Prevent parallax when scroll position is negative to the window
                 if(scrollPos >= 0) {
-                    videoPosition = parseInt(this.options.$videoWrap.offset().top);
-                    videoOffset = videoPosition - scrollPos;
-                    yPos = -(videoOffset / this.options.parallaxOptions.effect);
+                    yPos = this.calculateYPos(scrollPos);
                 } else {
-                    yPos = 0;
+                    yPos = this.calculateYPos(0);
                 }
             } else {
                 yPos = -yPos;
@@ -203,8 +205,16 @@
                 $video.css(me.options.browserPrexix + 'transform', 'translate(-'+ xPos +'px, ' + yPos + 'px)');
                 $video.css('transform', 'translate('+ xPos +'px, ' + yPos + 'px)');
             }
+        },
 
+        calculateYPos: function (scrollPos) {
+            var videoPosition, videoOffset, yPos;
 
+            videoPosition = parseInt(this.options.$videoWrap.offset().top);
+            videoOffset = videoPosition - scrollPos;
+            yPos = -(videoOffset / this.options.parallaxOptions.effect);
+
+            return yPos;
         },
 
         disableParallax: function () {
