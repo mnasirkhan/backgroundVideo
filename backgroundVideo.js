@@ -183,8 +183,7 @@
                 scrollPos = this.options.$window.scrollTop(),
                 scaleObject = this.scaleObject($video, me.options.$videoWrap),
                 xPos = scaleObject.xPos,
-                yPos = scaleObject.yPos,
-                origYPos = yPos;
+                yPos = scaleObject.yPos;
 
             // Check for parallax
             if(this.options.parallax) {
@@ -194,7 +193,6 @@
                 } else {
                     yPos = this.calculateYPos(0);
                 }
-                yPos -= origYPos;
             } else {
                 yPos = -yPos;
             }
