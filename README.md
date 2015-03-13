@@ -1,4 +1,4 @@
-backgroundVideo - v0.1.3 (beta)
+backgroundVideo - v0.1.4
 ============
 ## About
 ### What is backgroundVideo?
