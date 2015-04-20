@@ -122,6 +122,8 @@
                 }
             }
 
+            el.parentNode.removeChild(el);
+
             if( has3d !== undefined ){
                 return has3d !== 'none';
             } else {
