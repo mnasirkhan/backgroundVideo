@@ -38,6 +38,7 @@
         this.options.$video = $(element);
 
         this.detectBrowser();
+        this.shimRequestAnimationFrame();
         this.options.has3d = this.detect3d();
 
         // Set wrap default styles
@@ -75,6 +76,7 @@
             var me = this;
 
             this.initialised = true;
+            this.lastPosition = -1;
 
             // Run scaleObject function on window resize
             this.options.$window.resize(function() {
@@ -83,10 +85,7 @@
 
             // Use Parallax effect on the object
             if(this.options.parallax) {
-                // Set scroll listener for parallax effect
-                this.options.$window.on('scroll.backgroundVideoParallax', function () {
-                    me.positionObject(me.options.$video);
-                });
+                this.update();
             }
 
             // Pause video when the video goes out of the browser view
@@ -101,6 +100,45 @@
 
             // Prompt resize to trigger listeners and set to browser size
             this.options.$window.trigger('resize');
+        },
+
+        update: function () {
+            var me = this;
+
+            if (this.lastPosition == window.pageYOffset) {
+                window.requestAnimationFrame(me.update.bind(me))
+                return false
+            } else this.lastPosition = window.pageYOffset
+
+            this.positionObject(me.options.$video);
+            this.update();
+        },
+
+        shimRequestAnimationFrame: function () {
+            /* Paul Irish rAF.js: https://gist.github.com/paulirish/1579671 */
+
+            var lastTime = 0;
+            var vendors = ['ms', 'moz', 'webkit', 'o'];
+            for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+                window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
+                window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame']
+                                           || window[vendors[x]+'CancelRequestAnimationFrame'];
+            }
+
+            if (!window.requestAnimationFrame)
+                window.requestAnimationFrame = function(callback, element) {
+                    var currTime = new Date().getTime();
+                    var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+                    var id = window.setTimeout(function() { callback(currTime + timeToCall); }, 
+                      timeToCall);
+                    lastTime = currTime + timeToCall;
+                    return id;
+                };
+
+            if (!window.cancelAnimationFrame)
+                window.cancelAnimationFrame = function(id) {
+                    clearTimeout(id);
+                };
         },
 
         detect3d: function () {
