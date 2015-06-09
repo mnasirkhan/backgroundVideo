@@ -81,7 +81,7 @@
 
             // Run scaleObject function on window resize
             this.options.$window.resize(function() {
-                me.positionObject(me.options.$video);
+                me.positionObject();
             });
 
             // Use Parallax effect on the object
@@ -170,12 +170,12 @@
             }
         },
 
-        scaleObject: function($video, $videoWrap) {
+        scaleObject: function() {
             var me = this, heightScale, widthScale, scaleFactor;
 
             // Set the video wrap to the outerWrap size (defaulted to window)
-            $videoWrap.width(this.options.$outerWrap.width());
-            $videoWrap.height(this.options.$outerWrap.height());
+            this.options.$videoWrap.width(this.options.$outerWrap.width());
+            this.options.$videoWrap.height(this.options.$outerWrap.height());
 
             heightScale = this.options.$window.width() / this.options.originalVideoW;
             widthScale = this.options.$window.height() / this.options.originalVideoH;
@@ -197,7 +197,7 @@
 
         },
 
-        positionObject: function($video) {
+        positionObject: function() {
             var me = this,
                 scrollPos = window.pageYOffset,
                 scaleObject = this.scaleObject(this.options.$video, me.options.$videoWrap),
