@@ -77,6 +77,7 @@
 
             this.initialised = true;
             this.lastPosition = -1;
+            this.ticking = false;
 
             // Run scaleObject function on window resize
             this.options.$window.resize(function() {
@@ -85,7 +86,9 @@
 
             // Use Parallax effect on the object
             if(this.options.parallax) {
-                this.update();
+                this.options.$window.on('scroll', function () {
+                    me.update();
+                });
             }
 
             // Pause video when the video goes out of the browser view
@@ -102,43 +105,20 @@
             this.options.$window.trigger('resize');
         },
 
+        requestTick: function() {
+            var me = this;
+
+            if (!this.ticking) {
+                window.requestAnimationFrame(me.positionObject.bind(me));
+                this.ticking = true;
+            }
+        },
+
         update: function () {
             var me = this;
 
-            if (this.lastPosition == window.pageYOffset) {
-                window.requestAnimationFrame(me.update.bind(me))
-                return false
-            } else this.lastPosition = window.pageYOffset
-
-            this.positionObject(me.options.$video);
-            this.update();
-        },
-
-        shimRequestAnimationFrame: function () {
-            /* Paul Irish rAF.js: https://gist.github.com/paulirish/1579671 */
-
-            var lastTime = 0;
-            var vendors = ['ms', 'moz', 'webkit', 'o'];
-            for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
-                window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
-                window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame']
-                                           || window[vendors[x]+'CancelRequestAnimationFrame'];
-            }
-
-            if (!window.requestAnimationFrame)
-                window.requestAnimationFrame = function(callback, element) {
-                    var currTime = new Date().getTime();
-                    var timeToCall = Math.max(0, 16 - (currTime - lastTime));
-                    var id = window.setTimeout(function() { callback(currTime + timeToCall); }, 
-                      timeToCall);
-                    lastTime = currTime + timeToCall;
-                    return id;
-                };
-
-            if (!window.cancelAnimationFrame)
-                window.cancelAnimationFrame = function(id) {
-                    clearTimeout(id);
-                };
+            this.lastPosition = window.pageYOffset;
+            this.requestTick();
         },
 
         detect3d: function () {
@@ -206,22 +186,21 @@
                 scaleFactor = this.options.minimumVideoWidth / this.options.originalVideoW;
             }
 
-            // Scale object
-            $video.width(scaleFactor * this.options.originalVideoW);
-            $video.height(scaleFactor * this.options.originalVideoH);
+            this.options.$video.width(scaleFactor * this.options.originalVideoW);
+            this.options.$video.height(scaleFactor * this.options.originalVideoH);
 
             return {
                 // Return x and y axis values for positioning
-                xPos: -(parseInt($video.width() - this.options.$window.width()) / 2),
-                yPos: parseInt($video.height() - this.options.$window.height()) / 2
+                xPos: -(parseInt(this.options.$video.width() - this.options.$window.width()) / 2),
+                yPos: parseInt(this.options.$video.height() - this.options.$window.height()) / 2
             };
 
         },
 
         positionObject: function($video) {
             var me = this,
-                scrollPos = this.options.$window.scrollTop(),
-                scaleObject = this.scaleObject($video, me.options.$videoWrap),
+                scrollPos = window.pageYOffset,
+                scaleObject = this.scaleObject(this.options.$video, me.options.$videoWrap),
                 xPos = scaleObject.xPos,
                 yPos = scaleObject.yPos;
 
@@ -239,16 +218,20 @@
 
             // Check for 3dtransforms
             if(me.options.has3d) {
-                $video.css(me.options.browserPrexix + 'transform3d', 'translate3d(-'+ xPos +'px, ' + yPos + 'px, 0)');
-                $video.css('transform', 'translate3d('+ xPos +'px, ' + yPos + 'px, 0)');
+                this.options.$video.css(me.options.browserPrexix + 'transform3d', 'translate3d(-'+ xPos +'px, ' + yPos + 'px, 0)');
+                this.options.$video.css('transform', 'translate3d('+ xPos +'px, ' + yPos + 'px, 0)');
             } else {
-                $video.css(me.options.browserPrexix + 'transform', 'translate(-'+ xPos +'px, ' + yPos + 'px)');
-                $video.css('transform', 'translate('+ xPos +'px, ' + yPos + 'px)');
+                this.options.$video.css(me.options.browserPrexix + 'transform', 'translate(-'+ xPos +'px, ' + yPos + 'px)');
+                this.options.$video.css('transform', 'translate('+ xPos +'px, ' + yPos + 'px)');
             }
+
+
+            this.ticking = false;
         },
 
         calculateYPos: function (yPos, scrollPos) {
             var videoPosition, videoOffset;
+
             videoPosition = parseInt(this.options.$videoWrap.offset().top);
             videoOffset = videoPosition - scrollPos;
             yPos = -((videoOffset / this.options.parallaxOptions.effect) + yPos);
@@ -271,6 +254,33 @@
                     me.options.$video.get(0).pause();
                 }
             });
+        },
+
+        shimRequestAnimationFrame: function () {
+            /* Paul Irish rAF.js: https://gist.github.com/paulirish/1579671 */
+
+            var lastTime = 0;
+            var vendors = ['ms', 'moz', 'webkit', 'o'];
+            for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+                window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
+                window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame']
+                                           || window[vendors[x]+'CancelRequestAnimationFrame'];
+            }
+
+            if (!window.requestAnimationFrame)
+                window.requestAnimationFrame = function(callback, element) {
+                    var currTime = new Date().getTime();
+                    var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+                    var id = window.setTimeout(function() { callback(currTime + timeToCall); }, 
+                      timeToCall);
+                    lastTime = currTime + timeToCall;
+                    return id;
+                };
+
+            if (!window.cancelAnimationFrame)
+                window.cancelAnimationFrame = function(id) {
+                    clearTimeout(id);
+                };
         }
     };
 
