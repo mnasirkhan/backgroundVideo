@@ -218,7 +218,7 @@
 
             // Check for 3dtransforms
             if(me.options.has3d) {
-                this.options.$video.css(me.options.browserPrexix + 'transform3d', 'translate3d(-'+ xPos +'px, ' + yPos + 'px, 0)');
+                this.options.$video.css(me.options.browserPrexix + 'transform', 'translate3d(-'+ xPos +'px, ' + yPos + 'px, 0)');
                 this.options.$video.css('transform', 'translate3d('+ xPos +'px, ' + yPos + 'px, 0)');
             } else {
                 this.options.$video.css(me.options.browserPrexix + 'transform', 'translate(-'+ xPos +'px, ' + yPos + 'px)');
@@ -271,7 +271,7 @@
                 window.requestAnimationFrame = function(callback, element) {
                     var currTime = new Date().getTime();
                     var timeToCall = Math.max(0, 16 - (currTime - lastTime));
-                    var id = window.setTimeout(function() { callback(currTime + timeToCall); }, 
+                    var id = window.setTimeout(function() { callback(currTime + timeToCall); },
                       timeToCall);
                     lastTime = currTime + timeToCall;
                     return id;
