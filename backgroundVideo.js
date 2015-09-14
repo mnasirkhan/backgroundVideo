@@ -1,5 +1,5 @@
  /*!
- * backgroundVideo v0.2.0
+ * backgroundVideo v0.2.3
  * https://github.com/linnett/backgroundVideo
  * Use HTML5 video to create an effect like the CSS property, 'background-size: cover'. Includes parallax option.
  *
