@@ -1,5 +1,5 @@
  /*!
- * backgroundVideo v0.2.3
+ * backgroundVideo v0.2.4
  * https://github.com/linnett/backgroundVideo
  * Use HTML5 video to create an effect like the CSS property, 'background-size: cover'. Includes parallax option.
  *
@@ -76,19 +76,10 @@
             var me = this;
 
             this.initialised = true;
-            this.lastPosition = -1;
-            this.ticking = false;
-
-            // Run scaleObject function on window resize
-            this.options.$window.resize(function() {
-                me.positionObject();
-            });
 
             // Use Parallax effect on the object
             if(this.options.parallax) {
-                this.options.$window.on('scroll', function () {
-                    me.update();
-                });
+                me.update();
             }
 
             // Pause video when the video goes out of the browser view
@@ -100,25 +91,30 @@
             if(this.options.preventContextMenu) {
                 this.options.$video.on('contextmenu', function() { return false; });
             }
-
-            // Prompt resize to trigger listeners and set to browser size
-            this.options.$window.trigger('resize');
-        },
-
-        requestTick: function() {
-            var me = this;
-
-            if (!this.ticking) {
-                window.requestAnimationFrame(me.positionObject.bind(me));
-                this.ticking = true;
-            }
         },
 
         update: function () {
-            var me = this;
+            var me = this,
+                ticking = false;
 
-            this.lastPosition = window.pageYOffset;
-            this.requestTick();
+            var update = function() {
+                me.positionObject();
+                ticking = false;
+            };
+
+            var requestTick = function() {
+                if (!ticking) {
+                    window.requestAnimationFrame(update);
+                    ticking = true;
+                }
+            };
+
+            if(this.options.parallax) {
+                this.options.$window.on('scroll.backgroundVideo', requestTick);
+            }
+
+            this.options.$window.on('resize.backgroundVideo', requestTick);
+            requestTick();
         },
 
         detect3d: function () {
@@ -224,9 +220,6 @@
                 this.options.$video.css(me.options.browserPrexix + 'transform', 'translate(-'+ xPos +'px, ' + yPos + 'px)');
                 this.options.$video.css('transform', 'translate('+ xPos +'px, ' + yPos + 'px)');
             }
-
-
-            this.ticking = false;
         },
 
         calculateYPos: function (yPos, scrollPos) {
