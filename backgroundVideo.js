@@ -77,11 +77,6 @@
 
             this.initialised = true;
 
-            // Use Parallax effect on the object
-            if(this.options.parallax) {
-                me.update();
-            }
-
             // Pause video when the video goes out of the browser view
             if(this.options.pauseVideoOnViewLoss) {
                 this.playPauseVideo();
@@ -91,6 +86,8 @@
             if(this.options.preventContextMenu) {
                 this.options.$video.on('contextmenu', function() { return false; });
             }
+
+            me.update();
         },
 
         update: function () {
