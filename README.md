@@ -53,8 +53,8 @@ In its most simple form, this will create a video based on the `window` height a
 #### Usage with additional options
 
 ```
-<div id="outer-wrap" style="width: 100%; height: 450px;>"
-    <div id="vid-wrap">
+<div id="outer-wrap" style="width: 100%; height: 450px;">
+    <div id="video-wrap">
         <video id="my-video" preload="metadata" autoplay loop>
             <source src="yourVideoName.mp4" type="video/mp4">
             <source src="yourVideoName.webm" type="video/webm">
