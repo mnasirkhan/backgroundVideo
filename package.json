@@ -1,6 +1,6 @@
 {
   "name": "background-video",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "backgroundVideo makes your HTML5 `<video>` behave like the CSS property `background-size: cover`, making it fully responsive and scaling to aspect ratio. backgroundVideo also has parallax options.",
   "main": "backgroundVideo.js",
   "scripts": {
