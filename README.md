@@ -25,6 +25,7 @@ HTML5 video supported browsers on desktop:
 > *Please note this plugin will not work on mobile devices. Background videos will never work until autoplay is allowed. A responsive image is suggested as fallback*
 
 ## How to use
+
 The HTML structure is the most important part here. The rest of the work will be taken care of by the JavaScript.
 
 For the most basic implementation, add the following to your `<body>`:
@@ -49,6 +50,12 @@ Then, before your closing `<body>` tag add:
 </script>
 ```
 In its most simple form, this will create a video based on the `window` height and width and apply a Parallax effect of 1.5.
+
+You can also use npm:
+
+```
+npm install background-video
+```
 
 #### Usage with additional options
 
