@@ -1,0 +1,17 @@
+<script>
+	    ;(function($) {
+            var BV = new $.BigVideo();
+			BV.init();
+			BV.show('http://websitename.tld/Untitled.mp4',{ambient:true});
+			$('#big-video-wrap').hide();
+			$(window).on('load', function(){
+			  $('#big-video-wrap').delay(300).fadeIn('slow');
+			});
+      
+     		// Video Play/Pause toggle
+			$('#video-toggle').on('click', function(e) {
+                if (this.checked)   BV.getPlayer().play();
+                else                BV.getPlayer().pause();
+          	});
+         })(jQuery);
+    </script>
